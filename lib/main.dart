@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: Center(child: Text("Animation")),
       ),
       body: Column(
         children: [
@@ -101,9 +102,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 isController1 ? MainAxisAlignment.start : MainAxisAlignment.end,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: width / 5),
+                padding: EdgeInsets.symmetric(horizontal: width / 15),
                 child: isModel1Loaded && isModel2Loaded
-                    ? Icon(Icons.arrow_drop_down, size: 40)
+                    ? Column(
+                        children: [
+                          Icon(Icons.arrow_drop_down, size: 40),
+                          SizedBox(
+                            width: width / 3,
+                            child: Divider(
+                              indent: 5,
+                              endIndent: 5,
+                              thickness: 3,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          )
+                        ],
+                      )
                     : null,
               )
             ],
