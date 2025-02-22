@@ -58,8 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   double theta2 = 75;
   double phi2 = 80;
   double radius2 = 800;
-  String model1 = './assets/Bee.glb';
-  String model2 = './assets/wolf.glb';
+  String model1 = './assets/prelimFemale.glb';
+  String model2 = './assets/prelimModel.glb';
 
   void move(String direction) {
     Map<String, double> horizontalWays = {
