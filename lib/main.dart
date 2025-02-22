@@ -1,5 +1,6 @@
 // import 'dart:convert';
 
+import 'package:animation/my_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_3d_controller/flutter_3d_controller.dart';
@@ -52,14 +53,28 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isPlayingAnimation = false;
   bool isModel1Loaded = false;
   bool isModel2Loaded = false;
-  double theta1 = 285;
+  double theta1 = 0;
   double phi1 = 80;
   double radius1 = 500;
-  double theta2 = 75;
+  double theta2 = 0;
   double phi2 = 80;
   double radius2 = 800;
   String model1 = './assets/prelimFemale.glb';
   String model2 = './assets/prelimModel.glb';
+  String animationType = '';
+  Map<String, String> maleAnimation = {
+    "idle": "idle",
+    "expression":
+        "Armature.005|M_Standing_Expressions_006|M_Standing_Expressions_",
+    "dance": "Armature.006|M_Dances_003|M_Dances_003:BaseAnimation Retarget",
+    "locomotion": "run.001"
+  };
+  Map<String, String> femaleAnimation = {
+    "idle": "Armature.003|F_Standing_Idle_Variations_004|F_Standing_Idle_Var",
+    "expression": "expression",
+    "dance": "dance",
+    "locomotion": "run"
+  };
 
   void move(String direction) {
     Map<String, double> horizontalWays = {
@@ -79,6 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // male :[Armature.006|M_Dances_003|M_Dances_003:BaseAnimation Retarget, Armature.005|M_Standing_Expressions_006|M_Standing_Expressions_, idle, run.001]
+// [dance, expression, Armature.003|F_Standing_Idle_Variations_004|F_Standing_Idle_Var, run,]
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Center(child: Text("Animation")),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Row(
             mainAxisAlignment:
@@ -157,131 +176,129 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-          Spacer(),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(width: 12),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20)),
-                        onPressed: () {
-                          move("left");
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 45,
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20)),
-                        onPressed: () {
-                          move("up");
-                        },
-                        child: Icon(
-                          Icons.arrow_upward,
-                          size: 45,
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(width: 12),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(),
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 20),
-                        ),
-                        onPressed: () {
-                          move("down");
-                        },
-                        child: Icon(
-                          Icons.arrow_downward,
-                          size: 45,
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20)),
-                        onPressed: () {
-                          move("right");
-                        },
-                        child: Icon(
-                          Icons.arrow_forward,
-                          size: 45,
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+              Text(
+                "Model 1",
+                style: TextStyle(
+                    fontWeight:
+                        isController1 ? FontWeight.bold : FontWeight.w300,
+                    fontSize: isController1 ? 20 : 18),
               ),
-              Column(
-                children: [
-                  Text(
-                    "Model 1",
-                    style: TextStyle(
-                        fontWeight:
-                            isController1 ? FontWeight.bold : FontWeight.w300,
-                        fontSize: isController1 ? 20 : 18),
-                  ),
-                  Switch(
-                      value: isController1,
-                      onChanged: (val) {
-                        setState(() {
-                          isController1 = !isController1;
-                        });
-                      }),
-                  Text(
-                    "Model 2",
-                    style: TextStyle(
-                        fontWeight:
-                            !isController1 ? FontWeight.bold : FontWeight.w300,
-                        fontSize: !isController1 ? 20 : 18),
-                  ),
-                ],
+              Switch(
+                  value: !isController1,
+                  onChanged: (val) {
+                    setState(() {
+                      isController1 = !isController1;
+                    });
+                  }),
+              Text(
+                "Model 2",
+                style: TextStyle(
+                    fontWeight:
+                        !isController1 ? FontWeight.bold : FontWeight.w300,
+                    fontSize: !isController1 ? 20 : 18),
               ),
-              SizedBox(
-                width: 5,
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: maleAnimation.keys.map((item) {
+              return InkWell(
+                child: MyButton(
+                  isSelected: animationType == item,
+                  child: Text(
+                    item,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    if (animationType == item) {
+                      controller1.stopAnimation();
+                      controller2.stopAnimation();
+                      animationType = '';
+                    } else {
+                      setState(() {
+                        controller1.playAnimation(
+                            animationName: femaleAnimation[item]);
+                        controller2.playAnimation(
+                            animationName: maleAnimation[item]);
+                        animationType = item;
+                      });
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 12, horizontal: 20)),
+                onPressed: () {
+                  move("left");
+                },
+                child: Icon(
+                  Icons.arrow_back,
+                  size: 45,
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 12, horizontal: 20)),
+                onPressed: () {
+                  move("up");
+                },
+                child: Icon(
+                  Icons.arrow_upward,
+                  size: 45,
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                ),
+                onPressed: () {
+                  move("down");
+                },
+                child: Icon(
+                  Icons.arrow_downward,
+                  size: 45,
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 12, horizontal: 20)),
+                onPressed: () {
+                  move("right");
+                },
+                child: Icon(
+                  Icons.arrow_forward,
+                  size: 45,
+                ),
               )
             ],
           ),
-          SizedBox(height: height * 0.1),
+          SizedBox(height: 8)
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            if (isPlayingAnimation) {
-              controller1.stopAnimation();
-              controller2.stopAnimation();
-            } else {
-              controller1.playAnimation();
-              controller2.playAnimation();
-            }
-            isPlayingAnimation = !isPlayingAnimation;
-          });
-        },
-        child: Icon(
-          isPlayingAnimation ? Icons.stop : Icons.play_arrow,
-          size: 30,
-        ),
       ),
     );
   }
 }
+
+
+
 
 //  WebView(
 //         onWebViewCreated: (controller) async {
