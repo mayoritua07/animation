@@ -94,6 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void uploadFile() {
+    if (isController1) {
+      model1 = '';
+    } else {
+      model2 = '';
+    }
+  }
+
   // male :[Armature.006|M_Dances_003|M_Dances_003:BaseAnimation Retarget, Armature.005|M_Standing_Expressions_006|M_Standing_Expressions_, idle, run.001]
 // [dance, expression, Armature.003|F_Standing_Idle_Variations_004|F_Standing_Idle_Var, run,]
 
@@ -150,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Flutter3DViewer(
                   src: model1,
                   controller: controller1,
-                  enableTouch: false,
+                  enableTouch: true,
                   onLoad: (String ii) {
                     setState(() {
                       controller1.setCameraOrbit(theta1, phi1, radius1);
@@ -165,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Flutter3DViewer(
                   src: model2,
                   controller: controller2,
-                  enableTouch: false,
+                  enableTouch: true,
                   onLoad: (String ii) {
                     setState(() {
                       controller2.setCameraOrbit(theta2, phi2, radius2);
